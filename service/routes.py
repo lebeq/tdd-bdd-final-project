@@ -106,23 +106,76 @@ def create_products():
 # R E A D   A   P R O D U C T
 ######################################################################
 
-#
-# PLACE YOUR CODE HERE TO READ A PRODUCT
-#
+@app.route('/products/<product_id>', methods=['GET'])
+def step_impl_get(product_id):
+    """Gets a product using ID"""
+    app.logger.info(f'Request to get product with id: {product_id}')
+    product = Product.find(product_id)
+
+    if product is None:
+        abort(status.HTTP_404_NOT_FOUND, f'Product with ID {product_id} not found!')
+
+    app.logger.info(f'Returning product with ID: {product_id}')
+    return product.serialize(), status.HTTP_200_OK
 
 ######################################################################
 # U P D A T E   A   P R O D U C T
 ######################################################################
 
-#
-# PLACE YOUR CODE TO UPDATE A PRODUCT HERE
-#
+@app.route('/products/<product_id>', methods=['PUT'])
+def step_impl_update(product_id):
+    """Updates a product"""
+    app.logger.info(f'Request to update product with ID: {product_id}')
 
+    product = Product.find(product_id)
+
+    if product is None:
+        abort(status.HTTP_404_NOT_FOUND, f'PRoduct with ID {product_id} not found!')
+
+    product.deserialize(request.get_json())
+    product.id = product_id
+    product.update()
+    return product.serialize(), status.HTTP_200_OK
 ######################################################################
 # D E L E T E   A   P R O D U C T
 ######################################################################
 
+@app.route('/products/<product_id>', methods=['DELETE'])
+def step_impl_delete(product_id):
+    """Deletes a single item by ID"""
+    app.logger.info(f'Request to delete product with ID: {product_id}')
 
-#
-# PLACE YOUR CODE TO DELETE A PRODUCT HERE
-#
+    product = Product.find(product_id)
+
+    if product:
+        product.delete()
+
+    return "", status.HTTP_204_NO_CONTENT
+
+@app.route('/products', methods=['GET'])
+def step_impl_count():
+    """Return all products"""
+    app.logger.info('Request to get all products')
+    products = Product.all()
+    results = [product.serialize() for product in products]
+    app.logger.info(f'{len(results)} products returned')
+    return results, status.HTTP_200_OK
+
+@app.route('/products', methods=['GET'])
+def step_impl_count_by_name():
+    """Returns all products"""
+    app.logger.info(f'Request to get all products by name')
+    products = []
+    name = request.args.get('name')
+
+    if name:
+        app.logger.info(f'Find by name: {name}')
+        products = Product.find_by_name(name)
+    else:
+        app.logger.info('Find all')
+        proucts = Product.all()
+
+    results = [product.serialize() for product in products]
+    app.logger.info(f'{len(results)} products returned')
+    return results, status.HTTP_200_OK
+
