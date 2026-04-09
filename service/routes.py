@@ -21,6 +21,7 @@ Product Store Service with UI
 from flask import jsonify, request, abort
 from flask import url_for  # noqa: F401 pylint: disable=unused-import
 from service.models import Product
+from service.models import Product, Category
 from service.common import status  # HTTP Status Codes
 from . import app
 
@@ -153,27 +154,27 @@ def step_impl_delete(product_id):
     return "", status.HTTP_204_NO_CONTENT
 
 @app.route('/products', methods=['GET'])
-def step_impl_count():
-    """Return all products"""
-    app.logger.info('Request to get all products')
-    products = Product.all()
-    results = [product.serialize() for product in products]
-    app.logger.info(f'{len(results)} products returned')
-    return results, status.HTTP_200_OK
-
-@app.route('/products', methods=['GET'])
 def step_impl_count_by_name():
     """Returns all products"""
     app.logger.info(f'Request to get all products by name')
     products = []
     name = request.args.get('name')
+    category = request.args.get('category')
+    available = request.args.get('available')
 
     if name:
         app.logger.info(f'Find by name: {name}')
         products = Product.find_by_name(name)
+    elif category:
+        app.logger.info(f'Find by category: {category}')
+        category_value = getattr(Category, category.upper())
+        products = Product.find_by_category(category_value)
+    elif available:
+        app.logger.info(f'Find by availability: {available}')
+        products = Product.find_by_availability(available)
     else:
         app.logger.info('Find all')
-        proucts = Product.all()
+        products = Product.all()
 
     results = [product.serialize() for product in products]
     app.logger.info(f'{len(results)} products returned')
