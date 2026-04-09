@@ -181,7 +181,7 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(found.count(), count)
         for product in found:
             self.assertEqual(product.category, category)
-    
+
     def test_find_by_price(self):
         """It should find Products by Price"""
         products = ProductFactory.create_batch(10)
@@ -194,7 +194,6 @@ class TestProductModel(unittest.TestCase):
         for product in found:
             self.assertEqual(product.price, price)
 
-    
     def test_update_error(self):
         """It should raise DataValidationError upon invalid update"""
         product = ProductFactory()
@@ -212,7 +211,7 @@ class TestProductModel(unittest.TestCase):
             'available': 'egg'
         }
         self.assertRaises(DataValidationError, product.deserialize, prod_to_dict)
-    
+
     def test_deserialize_error_attribute(self):
         """It should raise DataValidationError with wrong attribute LINE 145"""
         product = ProductFactory()
@@ -224,12 +223,9 @@ class TestProductModel(unittest.TestCase):
             'available': product.available
         }
         self.assertRaises(DataValidationError, product.deserialize, prod_to_dict)
-        
+
     def test_deserialize_error_bad_data(self):
         """It should raise DataValidationError with wrong category"""
         product = ProductFactory()
         bad_data = []
         self.assertRaises(DataValidationError, product.deserialize, bad_data)
-
-
-
