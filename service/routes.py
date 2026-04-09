@@ -20,7 +20,6 @@ Product Store Service with UI
 """
 from flask import jsonify, request, abort
 from flask import url_for  # noqa: F401 pylint: disable=unused-import
-from service.models import Product
 from service.models import Product, Category
 from service.common import status  # HTTP Status Codes
 from . import app
@@ -90,8 +89,7 @@ def create_products():
     #
     # Uncomment this line of code once you implement READ A PRODUCT
     #
-    # location_url = url_for("get_products", product_id=product.id, _external=True)
-    location_url = "/"  # delete once READ is implemented
+    location_url = url_for("step_impl_get", product_id=product.id, _external=True)
     return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
 
 
@@ -123,6 +121,7 @@ def step_impl_get(product_id):
 # U P D A T E   A   P R O D U C T
 ######################################################################
 
+
 @app.route('/products/<product_id>', methods=['PUT'])
 def step_impl_update(product_id):
     """Updates a product"""
@@ -137,9 +136,12 @@ def step_impl_update(product_id):
     product.id = product_id
     product.update()
     return product.serialize(), status.HTTP_200_OK
+
+
 ######################################################################
 # D E L E T E   A   P R O D U C T
 ######################################################################
+
 
 @app.route('/products/<product_id>', methods=['DELETE'])
 def step_impl_delete(product_id):
@@ -153,10 +155,11 @@ def step_impl_delete(product_id):
 
     return "", status.HTTP_204_NO_CONTENT
 
+
 @app.route('/products', methods=['GET'])
 def step_impl_count_by_name():
     """Returns all products"""
-    app.logger.info(f'Request to get all products by name')
+    app.logger.info('Request to get all products by name,category or availability')
     products = []
     name = request.args.get('name')
     category = request.args.get('category')
@@ -179,4 +182,3 @@ def step_impl_count_by_name():
     results = [product.serialize() for product in products]
     app.logger.info(f'{len(results)} products returned')
     return results, status.HTTP_200_OK
-
