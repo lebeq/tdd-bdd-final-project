@@ -131,10 +131,6 @@ class TestProductRoutes(TestCase):
         self.assertEqual(new_product["available"], test_product.available)
         self.assertEqual(new_product["category"], test_product.category.name)
 
-        #
-        # Uncomment this code once READ is implemented
-        #
-
         # Check that the location header was correct
         response = self.client.get(location)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -184,6 +180,16 @@ class TestProductRoutes(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_product = response.get_json()
         self.assertEqual(updated_product['description'], 'unknown')
+
+    def test_update_invalid_id(self):
+        """It should return error 404"""
+        test_product = ProductFactory()
+        response = self.client.post(BASE_URL, json=test_product.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        new_product = response.get_json()
+        new_product['id'] = '0'
+        response = self.client.put(f"{BASE_URL}/{new_product['id']}", json=new_product)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_product(self):
         """IT shopuld delete a product"""

@@ -219,7 +219,7 @@ class TestProductModel(unittest.TestCase):
             'name': product.name,
             'description': product.description,
             'price': product.price,
-            'category': product.category,
+            'category': 'INVALID_CATEGORY',
             'available': product.available
         }
         self.assertRaises(DataValidationError, product.deserialize, prod_to_dict)
